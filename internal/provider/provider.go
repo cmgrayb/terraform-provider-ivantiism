@@ -2,7 +2,9 @@ package provider
 
 import (
 	"context"
+	"time"
 
+	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -27,10 +29,38 @@ func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			DataSourcesMap: map[string]*schema.Resource{
-				"scaffolding_data_source": dataSourceScaffolding(),
+				"ism_configuration_item_datasource": dataSourceConfigurationItem(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"scaffolding_resource": resourceScaffolding(),
+				"ism_configuration_item_resource": resourceConfigurationItem(),
+			},
+		}
+	Schema:
+		map[string]*schema.Schema{
+			"username": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ISM_USERNAME", nil),
+				Description: "Username passed to the Ivanti ISM API.  Can also be set through environment variable ISM_USERNAME",
+			},
+			"password": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ISM_PASSWORD", nil),
+				Sensitive:   true,
+				Description: "Password passed to the Ivanti ISM API.  Can also be set through environment variable ISM_PASSWORD",
+			},
+			"userrole": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ISM_USERROLE", nil),
+				Description: "User role assigned to username in Ivanti Service Manager.  Can also be set through environment variable ISM_USERROLE",
+			},
+			"tenant": {
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("ISM_TENANT", nil),
+				Description: "Ivanti Service Manager tenant internal ID.  Can also be set through environment variable ISM_TENANT",
 			},
 		}
 
@@ -44,10 +74,15 @@ type apiClient struct {
 	// Add whatever fields, client or connection info, etc. here
 	// you would need to setup to communicate with the upstream
 	// API.
+	BaseUrl   string
+	Timeout   time.Duration
+	UserAgent string
 }
 
 func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		log := hclog.Default()
+		log.Trace("[TRACE] Configuring Ivanti Service Manager provider connection")
 		// Setup a User-Agent for your API client (replace the provider name for yours):
 		// userAgent := p.UserAgent("terraform-provider-ivantiism", version)
 		// TODO: myClient.UserAgent = userAgent
