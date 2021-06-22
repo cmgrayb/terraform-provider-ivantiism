@@ -1,4 +1,4 @@
-module github.com/hashicorp/terraform-provider-ivantiism
+module github.com/cmgrayb/terraform-provider-ivantiism
 
 go 1.15
 
