@@ -3,7 +3,8 @@ package provider
 import (
 	"context"
 	"fmt"
-	"io"
+
+	// "io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -139,7 +140,7 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 
 		log.Trace("Received OAuth response", "StatusCode", resp.StatusCode, "ContentLength", resp.ContentLength)
 		if resp.StatusCode != 200 {
-			body, _ := io.ReadAll(resp.Body)
+			// body, _ := io.ReadAll(resp.Body)
 			return config, diag.Errorf("Oauth token response: (%d) %s", resp.StatusCode, body)
 		}
 		return config, diags
