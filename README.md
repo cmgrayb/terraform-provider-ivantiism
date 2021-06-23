@@ -1,4 +1,4 @@
-# Terraform Provider for Ivanti ISM
+# Terraform Provider for Ivanti Service Manager
 
 This repository holds the source code for a third party Ivanti Service Manager provider.  At original release, all objects will be treated as custom objects.  Common objects built into the product are welcome and will be added in as time allows.
 

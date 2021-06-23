@@ -51,7 +51,7 @@ func New(version string) func() *schema.Provider {
 					Required:    true,
 					DefaultFunc: schema.EnvDefaultFunc("ISM_PASSWORD", nil),
 					Sensitive:   true,
-					Description: "Password passed to the Ivanti ISM API.  Can also be set through environment variable ISM_PASSWORD",
+					Description: "Password passed to the Ivanti ISM API.  Can also be set through environment variable ISM_PASSWORD, though not recommended",
 				},
 				"userrole": {
 					Type:        schema.TypeString,
