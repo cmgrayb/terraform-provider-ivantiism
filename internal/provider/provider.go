@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	// "io"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -120,13 +120,13 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 
 		url := baseurl + "/api/rest/authentication/login"
 		method := "POST"
-		body := fmt.Sprintf(
+		reqbody := fmt.Sprintf(
 			"{,`tenant : %s,`username : %s,`password : %s,`role : %s,`}",
 			tenant, username, password, userrole,
 		)
 
-		log.Trace("Sending authentication request", "URL", url, "Body", body, "Timeout", config.Timeout)
-		req, err := http.NewRequest(method, url, strings.NewReader(body))
+		log.Trace("Sending authentication request", "URL", url, "Body", reqbody, "Timeout", config.Timeout)
+		req, err := http.NewRequest(method, url, strings.NewReader(reqbody))
 		if err != nil {
 			return config, diag.FromErr(err)
 		}
@@ -140,8 +140,8 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 
 		log.Trace("Received OAuth response", "StatusCode", resp.StatusCode, "ContentLength", resp.ContentLength)
 		if resp.StatusCode != 200 {
-			// body, _ := io.ReadAll(resp.Body)
-			return config, diag.Errorf("Oauth token response: (%d) %s", resp.StatusCode, body)
+			respbody, _ := io.ReadAll(resp.Body)
+			return config, diag.Errorf("Oauth token response: (%d) %s", resp.StatusCode, respbody)
 		}
 		return config, diags
 	}
