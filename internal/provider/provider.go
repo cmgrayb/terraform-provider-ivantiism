@@ -135,14 +135,13 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 		if err != nil {
 			return config, diag.FromErr(err)
 		}
-		// defer resp.Body.Close()
+		defer resp.Body.Close()
 
 		log.Trace("Received OAuth response", "StatusCode", resp.StatusCode, "ContentLength", resp.ContentLength)
 		if resp.StatusCode != 200 {
 			respbody, _ := io.ReadAll(resp.Body)
 			return config, diag.Errorf("Oauth token response: (%d) %s", resp.StatusCode, respbody)
 		}
-		resp.Body.Close()
 		return config, diags
 	}
 }
