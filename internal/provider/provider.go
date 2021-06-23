@@ -2,6 +2,11 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/go-hclog"
@@ -29,41 +34,39 @@ func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			DataSourcesMap: map[string]*schema.Resource{
-				"ism_configuration_item_datasource": dataSourceConfigurationItem(),
+				"configuration_item": dataSourceConfigurationItem(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"ism_configuration_item_resource": resourceConfigurationItem(),
+				"configuration_item": resourceConfigurationItem(),
+			},
+			Schema: map[string]*schema.Schema{
+				"username": {
+					Type:        schema.TypeString,
+					Required:    true,
+					DefaultFunc: schema.EnvDefaultFunc("ISM_USERNAME", nil),
+					Description: "Username passed to the Ivanti ISM API.  Can also be set through environment variable ISM_USERNAME",
+				},
+				"password": {
+					Type:        schema.TypeString,
+					Required:    true,
+					DefaultFunc: schema.EnvDefaultFunc("ISM_PASSWORD", nil),
+					Sensitive:   true,
+					Description: "Password passed to the Ivanti ISM API.  Can also be set through environment variable ISM_PASSWORD",
+				},
+				"userrole": {
+					Type:        schema.TypeString,
+					Required:    true,
+					DefaultFunc: schema.EnvDefaultFunc("ISM_USERROLE", nil),
+					Description: "User role assigned to username in Ivanti Service Manager.  Can also be set through environment variable ISM_USERROLE",
+				},
+				"tenant": {
+					Type:        schema.TypeString,
+					Required:    true,
+					DefaultFunc: schema.EnvDefaultFunc("ISM_TENANT", nil),
+					Description: "Ivanti Service Manager tenant internal ID.  Can also be set through environment variable ISM_TENANT",
+				},
 			},
 		}
-	Schema:
-		map[string]*schema.Schema{
-			"username": {
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ISM_USERNAME", nil),
-				Description: "Username passed to the Ivanti ISM API.  Can also be set through environment variable ISM_USERNAME",
-			},
-			"password": {
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ISM_PASSWORD", nil),
-				Sensitive:   true,
-				Description: "Password passed to the Ivanti ISM API.  Can also be set through environment variable ISM_PASSWORD",
-			},
-			"userrole": {
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ISM_USERROLE", nil),
-				Description: "User role assigned to username in Ivanti Service Manager.  Can also be set through environment variable ISM_USERROLE",
-			},
-			"tenant": {
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("ISM_TENANT", nil),
-				Description: "Ivanti Service Manager tenant internal ID.  Can also be set through environment variable ISM_TENANT",
-			},
-		}
-
 		p.ConfigureContextFunc = configure(version, p)
 
 		return p
@@ -75,18 +78,70 @@ type apiClient struct {
 	// you would need to setup to communicate with the upstream
 	// API.
 	BaseUrl   string
+	Tenant    string
+	Username  string
+	Password  string
+	Role      string
 	Timeout   time.Duration
 	UserAgent string
 }
 
 func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	return func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
+	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 		log := hclog.Default()
 		log.Trace("[TRACE] Configuring Ivanti Service Manager provider connection")
+		username := url.QueryEscape(d.Get("username").(string))
+		password := url.QueryEscape(d.Get("password").(string))
+		tenant := d.Get("tenant").(string)
+		baseurl := d.Get("baseurl").(string)
+		userrole := d.Get("role").(string)
+		timeout, err := time.ParseDuration(d.Get("timeout").(string))
+
 		// Setup a User-Agent for your API client (replace the provider name for yours):
-		// userAgent := p.UserAgent("terraform-provider-ivantiism", version)
+		userAgent := p.UserAgent("terraform-provider-ivantiism", version)
 		// TODO: myClient.UserAgent = userAgent
 
-		return &apiClient{}, nil
+		config := &apiClient{
+			BaseUrl:   baseurl,
+			Timeout:   timeout,
+			UserAgent: userAgent,
+		}
+
+		if err != nil {
+			return config, diag.FromErr(err)
+		}
+
+		client := &http.Client{
+			Timeout: config.Timeout,
+		}
+
+		var diags diag.Diagnostics
+
+		url := baseurl + "/api/rest/authentication/login"
+		method := "POST"
+		body := fmt.Sprintf(
+			"{,`tenant : %s,`username : %s,`password : %s,`role : %s,`}",
+			tenant, username, password, userrole,
+		)
+
+		log.Trace("Sending authentication request", "URL", url, "Body", body, "Timeout", config.Timeout)
+		req, err := http.NewRequest(method, url, strings.NewReader(body))
+		if err != nil {
+			return config, diag.FromErr(err)
+		}
+		req.Header.Add("Content-Type", "application/json")
+
+		resp, err := client.Do(req)
+		if err != nil {
+			return config, diag.FromErr(err)
+		}
+		defer resp.Body.Close()
+
+		log.Trace("Received OAuth response", "StatusCode", resp.StatusCode, "ContentLength", resp.ContentLength)
+		if resp.StatusCode != 200 {
+			body, _ := io.ReadAll(resp.Body)
+			return config, diag.Errorf("Oauth token response: (%d) %s", resp.StatusCode, body)
+		}
+		return config, diags
 	}
 }
