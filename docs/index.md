@@ -23,6 +23,7 @@ provider "scaffolding" {
 
 ### Required
 
+- **baseurl** (String) Base URL for Ivanti ISM.  This should include the protocol, hostname, port if non-standard, and the name of the Service Manager application, such as: https://myserver.mycompany.com:443/ServiceManager
 - **password** (String, Sensitive) Password passed to the Ivanti ISM API.  Can also be set through environment variable ISM_PASSWORD, though not recommended
 - **tenant** (String) Ivanti Service Manager tenant internal ID.  Can also be set through environment variable ISM_TENANT
 - **username** (String) Username passed to the Ivanti ISM API.  Can also be set through environment variable ISM_USERNAME
