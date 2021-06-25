@@ -65,6 +65,12 @@ func New(version string) func() *schema.Provider {
 					DefaultFunc: schema.EnvDefaultFunc("ISM_TENANT", nil),
 					Description: "Ivanti Service Manager tenant internal ID.  Can also be set through environment variable ISM_TENANT",
 				},
+				"baseurl": {
+					Type:        schema.TypeString,
+					Required:    true,
+					DefaultFunc: schema.EnvDefaultFunc("ISM_BASEURL", nil),
+					Description: "Base URL for Ivanti ISM.  This should include the protocol, hostname, port if non-standard, and the name of the Service Manager application, such as: https://myserver.mycompany.com:443/ServiceManager",
+				},
 			},
 		}
 		p.ConfigureContextFunc = configure(version, p)
