@@ -3,7 +3,6 @@
 		"golang.Go",
         "GitHub.vscode-pull-request-github",
 		"eamodio.gitlens",
-		"EditorConfig.EditorConfig",
 		"oderwat.indent-rainbow",
 		"DavidAnson.vscode-markdownlint"
 	]
