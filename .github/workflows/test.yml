@@ -90,3 +90,16 @@ jobs:
 
       run: |
         go test -v -cover ./internal/provider/
+
+  matrixresult:
+    name: Matrix Result
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          result="${{ needs.build.result }}"
+          if [[ $result == "success" || $result == "skipped" ]]; then
+            exit 0
+          else
+            exit 1
+          fi
