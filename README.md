@@ -1,5 +1,9 @@
 # Terraform Provider for Ivanti Service Manager
 
+![Code Quality](https://github.com/cmgrayb/terraform-provider-ivantiism/actions/workflows/codeql-analysis.yml/badge.svg)
+![Build Tests](https://github.com/cmgrayb/terraform-provider-ivantiism/actions/workflows/test.yml/badge.svg)
+![Release](https://github.com/cmgrayb/terraform-provider-ivantiism/actions/workflows/release.yml/badge.svg)
+
 This repository holds the source code for a third party Ivanti Service Manager provider.  At original release, all objects will be treated as custom objects.  Common objects built into the product are welcome and will be added in as time allows.
 
 ## Project on hold
