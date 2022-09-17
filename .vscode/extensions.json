@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		"golang.Go",
+        "GitHub.vscode-pull-request-github",
+		"eamodio.gitlens",
+		"oderwat.indent-rainbow",
+		"DavidAnson.vscode-markdownlint"
+	]
+}

@@ -2,6 +2,10 @@
 
 This repository holds the source code for a third party Ivanti Service Manager provider.  At original release, all objects will be treated as custom objects.  Common objects built into the product are welcome and will be added in as time allows.
 
+## Project on hold ##
+
+Please note, this project has been largeley abandoned due to competing priorities and lack of a testing instance.  Next date for update of this project is currently unknown.
+
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x, Terraform Enterprise, or Terraform Cloud set to >= 0.13.x
