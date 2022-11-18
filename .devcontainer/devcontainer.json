@@ -25,9 +25,9 @@
         "vscode",
         "--cap-add=SYS_PTRACE",
         "--security-opt",
-        "seccomp=unconfined",
-        // map SSH keys for Git
-        "-v",
-        "${env:HOME}/.ssh:/home/vscode/.ssh:ro"
+        "seccomp=unconfined"
+        // map SSH keys for Git - appears to be handled natively in source Dockerfile
+        //"-v",
+        //"${env:HOME}/.ssh:/home/vscode/.ssh:ro"
     ]
 }
