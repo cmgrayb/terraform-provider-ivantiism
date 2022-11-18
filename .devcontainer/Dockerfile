@@ -1,5 +1,5 @@
 ARG GO_VERSION=1.19.3
-ARG ALPINE_VERSION=3.17
+ARG ALPINE_VERSION=3.16
 
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION}
 ARG USERNAME=vscode
@@ -14,7 +14,7 @@ RUN adduser $USERNAME -s /bin/sh -D -u $USER_UID $USER_GID && \
 
 # Install packages and Go language server
 RUN apk add -q --update --progress --no-cache git sudo openssh-client zsh
-RUN go get -u -v golang.org/x/tools/cmd/gopls 2>&1
+RUN go install -v golang.org/x/tools/gopls@latest 2>&1
 
 # Setup shell
 USER $USERNAME
