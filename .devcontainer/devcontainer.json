@@ -1,5 +1,33 @@
+// {
+//   "image": "ghcr.io/devcontainers/features/go:1",
+//   "features": {
+//   }
+// }
+
 {
-  "image": "ghcr.io/devcontainers/features/go:1",
-  "features": {
-  }
+  "name": "GoLang Development Environment",
+  "dockerFile": "Dockerfile",
+  // "appPort": 8000,
+  "extensions": [
+      "golang.Go",
+      "GitHub.vscode-pull-request-github",
+      "oderwat.indent-rainbow",
+      "eamodio.gitlens",
+      "shardulm94.trailing-spaces",
+      "IBM.output-colorizer",
+      "DavidAnson.vscode-markdownlint"
+  ],
+  "settings": {
+      "go.useLanguageServer": true
+  },
+  "postCreateCommand": "go mod download",
+  "runArgs": [
+      "-u",
+      "vscode",
+      "--cap-add=SYS_PTRACE",
+      "--security-opt",
+      "seccomp=unconfined",
+      // map SSH keys for Git
+      "-v", "${env:HOME}/.ssh:/home/vscode/.ssh:ro"
+  ]
 }
