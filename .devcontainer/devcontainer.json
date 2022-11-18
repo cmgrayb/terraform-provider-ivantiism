@@ -1,0 +1,5 @@
+{
+  "image": "ghcr.io/devcontainers/features/go:1",
+  "features": {
+  }
+}
