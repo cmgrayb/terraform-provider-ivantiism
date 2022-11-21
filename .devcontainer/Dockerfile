@@ -28,4 +28,5 @@ ENV ENV="/home/$USERNAME/.ashrc" \
     LANG=en_US.UTF-8
 RUN printf 'ZSH_THEME="robbyrussell"\nENABLE_CORRECTION="false"\nplugins=(git copyfile extract colorize dotenv encode64 golang)\nsource $ZSH/oh-my-zsh.sh' > "/home/$USERNAME/.zshrc"
 RUN echo "exec `which zsh`" > "/home/$USERNAME/.ashrc"
+RUN git config --global --add safe.directory /workspaces/terraform-provider-ivantiism
 USER root
