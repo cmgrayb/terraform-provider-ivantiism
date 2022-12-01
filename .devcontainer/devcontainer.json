@@ -1,33 +1,41 @@
-// {
-//   "image": "ghcr.io/devcontainers/features/go:1",
-//   "features": {
-//   }
-// }
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/go
 {
-    "name": "GoLang Development Environment",
-    "dockerFile": "Dockerfile",
-    // "appPort": 8000,
-    "extensions": [
-        "golang.Go",
-        "GitHub.vscode-pull-request-github",
-        "oderwat.indent-rainbow",
-        "eamodio.gitlens",
-        "shardulm94.trailing-spaces",
-        "IBM.output-colorizer",
-        "DavidAnson.vscode-markdownlint"
-    ],
-    "settings": {
-        "go.useLanguageServer": true
-    },
-    "postCreateCommand": "sudo go mod download",
-    "runArgs": [
-        "-u",
-        "vscode",
-        "--cap-add=SYS_PTRACE",
-        "--security-opt",
-        "seccomp=unconfined"
-        // map SSH keys for Git - appears to be handled natively in source Dockerfile
-        //"-v",
-        //"${env:HOME}/.ssh:/home/vscode/.ssh:ro"
-    ]
+	"name": "Go",
+	"image": "mcr.microsoft.com/devcontainers/go:0-1.19",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"go.toolsManagement.checkForUpdates": "local",
+				"go.useLanguageServer": true,
+				"go.gopath": "/go"
+			}
+		}
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/powershell:1": {},
+		"ghcr.io/devcontainers-contrib/features/pre-commit:1": {},
+		"ghcr.io/dhoeric/features/terraform-docs:1": {},
+		"ghcr.io/guiyomh/features/golangci-lint:0": {},
+		"ghcr.io/guiyomh/features/gomarkdoc:0": {},
+		"ghcr.io/guiyomh/features/goreleaser:0": {}
+	}
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	//"postCreateCommand": "git config --global --add safe.directory $PWD"
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
 }
