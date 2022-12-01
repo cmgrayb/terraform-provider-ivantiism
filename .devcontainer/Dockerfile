@@ -15,6 +15,9 @@ RUN adduser $USERNAME -s /bin/sh -D -u $USER_UID $USER_GID && \
 # Install packages and Go language server
 RUN apk add -q --update --progress --no-cache git sudo openssh-client zsh
 RUN go install -v golang.org/x/tools/gopls@latest 2>&1
+RUN go install -v github.com/go-delve/delve/cmd/dlv@latest 2>&1
+RUN go install -v honnef.co/go/tools/cmd/staticcheck@latest 2>&1
+
 
 # Setup shell
 USER $USERNAME
@@ -25,4 +28,5 @@ ENV ENV="/home/$USERNAME/.ashrc" \
     LANG=en_US.UTF-8
 RUN printf 'ZSH_THEME="robbyrussell"\nENABLE_CORRECTION="false"\nplugins=(git copyfile extract colorize dotenv encode64 golang)\nsource $ZSH/oh-my-zsh.sh' > "/home/$USERNAME/.zshrc"
 RUN echo "exec `which zsh`" > "/home/$USERNAME/.ashrc"
+RUN git config --global --add safe.directory /workspaces/terraform-provider-ivantiism
 USER root
