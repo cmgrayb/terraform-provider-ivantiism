@@ -16,7 +16,7 @@ on:
       - 'v*'
 
 env:
-  go-version: '1.18'
+  go-version: '1.19'
 
 jobs:
   goreleaser:
